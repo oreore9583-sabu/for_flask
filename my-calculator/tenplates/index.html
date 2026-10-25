@@ -1,1 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>計算サイト</title>
 
+  <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <script src="{{ url_for('static', filename='script.js') }}"defer></script>
+
+</head>
+<body>
+  <h1 style="color: white;">パーサー</h1>
+
+  <form action="/" method="get">
+      <input type="text" name="siki" id="siki" placeholder="式を入力">
+    
+      <button type="submit">計算</button>
+
+    
+    </form>
+
+  <h1><strong style="color: white;">{{siki}}</strong><strong id="result">{{result}}</strong></h1>
+  <div class="row">
+    <button class="trap">0</button>
+    <button id="**" onclick="addinput(this.id)" class="symbol">**</button>
+    <button id="(" onclick="addinput(this.id)" class="symbol">(</button>
+    <button id=")" onclick="addinput(this.id)" class="symbol">)</button>
+    <button id="/" onclick="addinput(this.id)" class="symbol">/</button>
+  </div>
+  <div class="row">
+    <button id="delete" onclick="addinput(this.id)" class="symbol">←</button>
+    <span id="7-9">
+
+    </span>
+    <button id="*" onclick="addinput(this.id)" class="symbol">*</button>
+    
+  </div>
+  <div class="row">
+    <button id="clear"onclick="addinput(this.id)">C</button>
+    <span id="4-6">
+
+      
+    </span>
+
+    <button id="-" onclick="addinput(this.id)" class="symbol">-</button>
+  </div>  
+
+  
+  <div class="row">
+    <span id="0-3">
+      <button id="0" onclick="addinput(this.id)" style="margin-right:1px;">0</button>
+      
+
+      </span>
+    <button id="+" onclick="addinput(this.id)" class="symbol">+</button>
+  </div>
+
+
+
+  <button id="." onclick="addinput(this.id)">.</button>
+  
+ 
+
+  
+  
+
+  
+  
+  <hr>
+  <details style="color: white;">
+  <summary><strong>演算記号について</strong></summary>
+  <dl>
+    <dt>足し算
+    <dd>+
+    <dt>引き算
+    <dd>-(これはマイナスにも)
+    <dt>掛け算
+    <dd>*
+    <dt>割り算
+    <dd>/(\じゃない)
+    <dt>累乗
+    <dd>**
+  </dl>
+    </details>
+  <p style="color: white;">数学記号は基本的に連続しないように</p>
+  <p style="color: white;">(...)(...)に対応させてないのでその間に*を挟んで</p>
+    
+    <a href="/add"">加法</a>
+  
+    
+
+
+</body>
+  
+</html>
