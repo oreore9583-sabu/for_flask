@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>計算サイト</title>
+  <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>足し算</h1>
+  <p>Flask</p>
+  <form action="/add" method="get">
+      <input type="number" name="a" placeholder="1つ目">
+      <input type="number" name="b" placeholder="2つ目">
+      <button type="submit">足す</button>
+    </form>
+    
+    <a href="/">ホームへ</a>
+
+    <strong>{{ans}}</strong>
+
+
+</body>
+</html>
