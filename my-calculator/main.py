@@ -1,3 +1,5 @@
+from jinja2.nodes import Getattr
+import gettext
 
 import keyword
 from flask import Flask, render_template, request
@@ -7,6 +9,8 @@ from zoneinfo import ZoneInfo
 from markupsafe import Markup
 import sqlite3
 import re
+from flask import g
+from flask import jsonify
 
 app = Flask(__name__)
 def calc(data):
@@ -222,9 +226,19 @@ def index():
         result="式を入力してください"
     if siki_for_else is None:
         siki_for_else=""
+
     else:
         siki_for_else+="="
-    return render_template("index.html", result=result,siki=siki_for_else)
+
+    if request.args.get("ajax")=="1":
+
+
+        for_json={"siki":siki_for_else,"result":result}
+        return jsonify(for_json)
+        
+    return render_template("index.html", result=result, siki=siki_for_else)
+
+
 
 
 @app.route("/add")
