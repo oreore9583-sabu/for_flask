@@ -1,4 +1,4 @@
-from jinja2.nodes import Getattr
+
 import gettext
 
 import keyword
