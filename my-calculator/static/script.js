@@ -40,3 +40,16 @@ function make_button(){
   }
 }
 make_button();
+async function calc_func(e){
+  e.preventDefault();
+  let siki=document.getElementById("siki").value;
+  const response=await fetch("/?siki="+ encodeURIComponent(siki) + "&ajax=1")
+  const data = await response.json();
+  siki=data.siki;
+  result=data.result
+  document.getElementById("result").innerHTML=result;
+  document.getElementById("dis_siki").innerHTML=siki;
+  document.getElementById("clear").click();
+}
+const a = document.getElementById("calc",calc_func) 
+a.addEventListener("submit", calc_func);
