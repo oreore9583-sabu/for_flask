@@ -45,11 +45,34 @@ async function calc_func(e){
   let siki=document.getElementById("siki").value;
   const response=await fetch("/?siki="+ encodeURIComponent(siki) + "&ajax=1")
   const data = await response.json();
+  
   siki=data.siki;
   result=data.result
-  document.getElementById("result").innerHTML=result;
-  document.getElementById("dis_siki").innerHTML=siki;
+  document.getElementById("result").textContent=result;
+  document.getElementById("dis_siki").textContent=siki;
   document.getElementById("clear").click();
+
 }
 const a = document.getElementById("calc",calc_func) 
 a.addEventListener("submit", calc_func);
+let old_html="";
+async function get_history(){
+
+  
+  const res =await fetch("/auto");
+  const data=await res.json()
+
+  const his=document.getElementById("history")
+  let new_html="";
+  for (const one_history of data){
+
+
+  new_html+=`<div>式:${one_history[1]}\t|\t時間:${one_history[2]}</div>`;}
+  if(new_html!=old_html){
+    his.innerHTML = new_html;
+    old_html=new_html
+  }
+} 
+                            
+get_history()
+setInterval(get_history,1000)
