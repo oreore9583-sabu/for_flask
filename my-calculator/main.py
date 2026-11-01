@@ -1,6 +1,6 @@
-
-import gettext
-
+import urllib.parse
+import urllib.request
+import json
 import keyword
 from flask import Flask, render_template, request
 from decimal import Decimal, DivisionByZero, InvalidOperation
@@ -11,6 +11,17 @@ import sqlite3
 import re
 from flask import g
 from flask import jsonify
+import logging
+
+# /auto へのリクエストログだけを除外するフィルター作成
+class NoAutoLogFilter(logging.Filter):
+    def filter(self, record):
+        # ログメッセージに "/auto" が含まれていたら出力しない (False)
+        return '/auto' not in record.getMessage()
+
+# Flaskのログ出力（werkzeug）にフィルターを適用
+logging.getLogger('werkzeug').addFilter(NoAutoLogFilter())
+url = "https://square-silence-02c6.haruta9583.workers.dev/"
 
 app = Flask(__name__)
 def calc(data):
@@ -146,10 +157,10 @@ def caco(data, kakuri):
 
 @app.route("/")
 def index():
-    fraud_input=""
+    fraud_input="" #初期化
     siki = request.args.get("siki")
     siki_for_else=siki
-    check=""#一応残す
+    check="" #一応残す
     result=None
     
     if siki:
@@ -212,15 +223,47 @@ def index():
             siki = calc(siki)
     
             result = siki[0]
+
+
+  # テスト用の受取先URL       
+            to_json=(f"{siki_for_else}={result}")
+
+            # 1. 送りたいデータ（辞書型）
+            data = {"id":to_json}
+
+            # 2. データを URLエンコード して、さらに バイナリ（bytes）に変換
+            # ※urlopenはdata引数にbytesが渡されると自動的にPOSTになります
+            encoded_data = json.dumps(data).encode("utf-8") 
+
+            # 3. リクエストの作成と送信
+            req = urllib.request.Request(url, data=encoded_data,headers={"Content-Type": "application/json","User-Agent": "my-python-a/1.0"})
+
+
+            try:
+                with urllib.request.urlopen(req) as response:
+                    html = response.read().decode("utf-8")
+
+
+            except urllib.error.HTTPError as e:
+                print("ステータス:", e.code)
+                print("レスポンス:", e.read().decode("utf-8"))
+            
     except DivisionByZero:
-        result="0で割ることはできません"
+        fraud_input="0で割ることはできません"
         check="DivisionByZero"
+    except InvalidOperation as e:
+        fraud_input=(f"不正な計算{e}")
+        check="fraud_calc"
+        print(repr(fraud_input))
+        print("check:", check)
+
     if fraud_input:
-        if check=="()Error"or check=="else_Error"or check=="Foreign object contamination":
+        if check=="()Error"or check=="else_Error"or check=="Foreign object contamination"or check=="DivisionByZero"or check=="fraud_calc":
             result=fraud_input
         
         else:
             result=f"{fraud_input}は連続させないでください"
+        print("result:", result)
         
     elif result is None:
         result="式を入力してください"
@@ -255,6 +298,18 @@ def add():
         ans = ""
     return render_template("add.html", ans=ans)
 
-
+@app.route("/auto")
+def auto():
+    with urllib.request.urlopen(urllib.request.Request(
+                                   url,
+                                   headers={"User-Agent": "my-python-app/1.0"}
+                               )) as response:
+        
+        html_str = response.read().decode('utf-8') 
+        
+        json_data = json.loads(html_str)
+        return jsonify(json_data)
+        
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=5000)
